@@ -29,8 +29,23 @@ class NewToDoc {
     let F = $(this.container);
     F.style.display = "none";
   }
-}
+  HIDE() {
+    let F = $(this.container);
+    let S = $(this.tag);
+    S.style.display = "none";
+  }
 
+  SHOW() {
+    let F = $(this.container);
+    let S = $(this.tag);
+    S.style.display = "block";
+  }
+  REMOVE(){
+    let F = $(this.container);
+    let S = $(this.tag);
+    S.remove()
+  }
+}
 // ******************** vars
 let nav = new NewToDoc(
   "body",
@@ -40,14 +55,13 @@ let nav = new NewToDoc(
 );
 let mainCont0 = new NewToDoc("body", "div", "main_cont0", "");
 let mainCont1 = new NewToDoc("body", "div", "main_cont1", "");
-let favs = $className("isFav"); // list
-let notFavs = $className("isNotFav"); // list
+let mainCont2 = new NewToDoc("body", "div", "main_cont2", "");
 
-function clearHTML0() {
-  $("body").innerHTML = "";
-  nav.ADD();
-  mainCont1.ADD();
-}
+
+let favs = $className("isFav"); // list of html elements
+let notFavs = $className("isNotFav"); // list of html elements
+let favList;
+let favWindowOpened = false
 
 let animeListObj = [
   {
@@ -97,7 +111,7 @@ let animeListObj = [
     img: "re_zero.jpg",
     class: "re_zero_btn",
     type: "Series",
-    isFav: true,
+    isFav: false,
   },
   {
     name: "Takt Op. Destiny",
@@ -171,26 +185,31 @@ function putPosters() {
         animeListObj[i]["isFav"]
       )}`
     );
-
     span.ADD();
   }
 }
-function watchData() {
-  // let searchBar = $('#search_bar');
-  // let top_bar = $('.top_bar');
-  // new NewToDoc('.top_bar','datalist',)
-
-  clearHTML0();
-  putPosters();
-}
-
-function sleep(delay) {
-  // from ms to s
-  delay *= 1000;
-  var start = new Date().getTime();
-  while (new Date().getTime() < start + delay);
-  {
+function fillFavList() {
+  favList = $(".main_cont2");
+  favList.innerHTML = "";
+  favs = $className("isFav");
+  let howManyFavs = favs.length;
+  for (let i = 0; i < howManyFavs; i++) {
+    let favSpan = favs[i].parentElement;
+    // making a clone of  every fav anime poster
+    let copyOfPoster = favSpan.cloneNode(true);
+    favList.append(copyOfPoster);
   }
+  if (favList.innerHTML == "") {
+    favList.innerHTML += "<h1 class='empty-fav'>add an anime</h1>";
+  }
+}
+function watchData() {
+  $("body").innerHTML = "";
+  nav.ADD();
+  mainCont1.ADD();
+  putPosters();
+  listenToSpans();
+  listenToHeart();
 }
 
 function fav(i, fact) {
@@ -200,31 +219,52 @@ function fav(i, fact) {
     return "<p class='isNotFav' id='animeList[" + i + "][4]'>Add to Fav</p>";
   }
 }
-function listenToFavs() {
+
+function listenToSpans() {
+  function toggleFav(clicked) {
+    if (clicked.classList.contains("isFav")) {
+      clicked.classList.remove("isFav");
+      clicked.classList.add("isNotFav");
+      clicked.innerText = "Add To Fav";
+    } else if (clicked.classList.contains("isNotFav")) {
+      clicked.classList.remove("isNotFav");
+      clicked.classList.add("isFav");
+      clicked.innerText = "Remove Fav";
+    }
+  }
   let posters = $className("poster");
   for (let i = 0; i < posters.length; i++) {
     posters[i].addEventListener("click", (e) => {
       let clicked = e.target;
       // check if it's the add to fav btn
-      if (clicked.classList.contains("isFav")) {
-        clicked.classList.remove("isFav");
-        clicked.classList.add("isNotFav");
-        clicked.innerText = "Add To Fav";
-      } else if (clicked.classList.contains("isNotFav")) {
-        clicked.classList.remove("isNotFav");
-        clicked.classList.add("isFav");
-        clicked.innerText = "Remove Fav";
-      }
-      // after every click on add To Fav or Remove Fav, Fav lists will update
-      updateFavs();
+      toggleFav(clicked);
     });
-
   }
 }
 
-function updateFavs() {
-  favs = $className("isFav");
-  notFavs = $className("isNotFav"); 
+function listenToHeart() {
+  let heart = $(".fav_heart ");
+  heart.addEventListener("click", (e) => {
+    fillFavList();
+    mainCont1.HIDE();
+    heart.src = "../tools/graphics/close-red.svg";
+    heart.classList.add("close-btn");
+    heart.classList.remove("fav_heart");
+    favWindowOpened = true
+  });
+  mainCont2.ADD()
+}
+
+function listenToClose(){
+  let closeBtn = $(".close-btn");
+  closeBtn.addEventListener("click", () => {
+    closeBtn.src = "../tools/graphics/heart-solid.svg";
+    closeBtn.classList.remove("close-btn");
+    closeBtn.classList.add("fav_heart");
+    mainCont2.HIDE();
+    mainCont1.SHOW();
+    favWindowOpened = false
+  });
 }
 
 // *****************start
@@ -240,11 +280,9 @@ function running() {
 
   $("#ok_btn").addEventListener("click", (event) => {
     watchData();
-    // $id("animeList[0][4]").addEventListener("click", (event) => {
-    //   alert(animeListObj[0]["name"]);
-    // });
-    listenToFavs();
   });
+  $("#ok_btn").click();
+  document.onclick = () => {  favWindowOpened? listenToClose(): listenToHeart()}
 }
 
 running();

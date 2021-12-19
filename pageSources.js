@@ -34,3 +34,5 @@ for (let i = 0; i < animes.length; i++) {
 myStr += ("]");
 return JSON.parse(myStr)
 }
+
+

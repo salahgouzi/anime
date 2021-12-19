@@ -17,6 +17,8 @@
   font-family: Baloo sans-serif;
   user-select: none;
   color: #fff;
+  box-sizing: border-box;
+  
 }
 .main_cont0,
 .main_cont1,
@@ -171,7 +173,46 @@ nav h1 {
   -ms-transform: scale(0.85) rotateY(-10deg) rotateX(-10deg);
   -o-transform: scale(0.85) rotateY(-10deg) rotateX(-10deg);
 }
+.favList{
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+  width: 10%;
+  height: 100%;
+  margin: 0 auto;
+  text-align: center;
+  margin-top:45px;
+  margin-right: -4%;
+  float: right;
+  top: 0;
+  padding: 1%;
+  transition: 0.3s all;
+}
 
+.favList h1{
+  color: black;
+  font-size: 14px;
+  text-align: left;
+  transition: 0.3s all;
+	animation: append-animate .3s linear;
+
+}
+
+
+@keyframes append-animate {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;	
+	}
+}
+
+/* animate new box */
+
+.empty-fav {
+ color:  gray !important;
+}
 @keyframes fade_in {
   0% {
     opacity: 0;
@@ -220,11 +261,11 @@ nav h1 {
     font-size: 2vw;
   }
   .poster {
-    width: 100%;
+    width: 80%;
     height: 100%;
   }
   .poster img {
     width: 100%;
     height: 50%;
-  }
+    }
 }
